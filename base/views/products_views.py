@@ -8,35 +8,34 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from base.products import products
 from rest_framework import status
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_protect
 
 
 @api_view(['GET'])
 def getProducts(request):
     query = request.query_params.get('keyword', '')
-    print('query', query);
-    if query == None:
-        products = Product.objects.all()
-    else:
-        products = Product.objects.filter(name__icontains=query)
-        page = request.query_params.get("page")
-        paginator = Paginator(products,2)
+    print(query)
+    products = Product.objects.filter(name__icontains=query).order_by('_id')
 
-        try:
-            products = paginator.page(page)
-        except PageNotAnInteger:
-            products = paginator.page(1)
-        except EmptyPage:
-            products = paginator.page(paginator.num_pages)
+    page = request.query_params.get('page', 1)
+    paginator = Paginator(products, 4)  # 2 items per page
 
-        if page == None:
-            page = 1
+    try:
+        page_number = int(page)
+        products_page = paginator.page(page_number)
+    except (PageNotAnInteger, ValueError):
+        products_page = paginator.page(1)
+    except EmptyPage:
+        products_page = paginator.page(paginator.num_pages)
 
-        page = int(page)
-
-
-    serializer = ProductSerializer(products, many=True)
-    return Response({"products":serializer.data, "page":page, "pages":paginator.num_pages})
-
+    serializer = ProductSerializer(products_page, many=True)
+    return Response({
+        'products': serializer.data,
+        'page': products_page.number,  # Current page number
+        'pages': paginator.num_pages,  # Total pages
+        'count': paginator.count  # Total items
+    })
 @api_view(['GET'])
 def getProduct(request, pk):
    product = Product.objects.get(pk=pk)
@@ -96,6 +95,8 @@ def uploadImage(request):
     product.save()
     return Response('Image was uploaded successfully :D')
 
+@csrf_exempt
+@csrf_protect
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def createProductReview(request, pk):
@@ -133,4 +134,4 @@ def createProductReview(request, pk):
         product.rating = total / len(reviews)
         product.save()
 
-        return Response('Review added')
+        return Response({'detail':'Review added'})

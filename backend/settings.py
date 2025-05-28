@@ -20,6 +20,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    "corsheaders",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -28,7 +29,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'base.apps.BaseConfig',
     'rest_framework',
-    "corsheaders"
+    
 ]
 
 REST_FRAMEWORK = {
@@ -127,12 +128,10 @@ MEDIA_ROOT = 'static/images'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-CORS_ALLOW_ALL_ORIGINS = True
-
 
 # Django project settings.py
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=30),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=300),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": False,
@@ -169,3 +168,5 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
+
+CORS_ALLOW_ALL_ORIGINS = True
