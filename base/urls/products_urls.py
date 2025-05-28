@@ -8,5 +8,6 @@ urlpatterns = [
     path('create/', views.createProduct, name="create-product"),
     path('upload/', views.uploadImage, name="upload-image"),
     path('delete/<int:pk>/', views.deleteProduct, name="delete-product"),
-    path('update/<int:pk>/', views.updateProduct, name="update-product")
+    path('update/<int:pk>/', views.updateProduct, name="update-product"),
+    path('top/', views.topProducts, name="top-products")
 ]
